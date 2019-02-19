@@ -1,0 +1,61 @@
+getwd()
+#Read data 
+data_challenge = read.csv("train_data.csv", sep = ";" , header = T, encoding = "UTF-8")
+
+#package to handle url
+install.packages("urltools")
+require(urltools)
+
+parsed_address <- url_parse(data_challenge[,3])
+
+str(parsed_address)
+
+parsed_address$path
+
+install.packages("tm")
+require(tm)
+
+stopwords(kind = "en")
+
+Clean_String <- function(string){
+  # Lowercase
+  temp <- tolower(string)
+  # Remove everything that is not a number or letter (may want to keep more 
+  # stuff in your actual analyses). 
+  temp <- stringr::str_replace_all(temp,"[^a-zA-Z\\s]", " ")
+  # Shrink down to just one white space
+  temp <- stringr::str_replace_all(temp,"[\\s]+", " ")
+  # Split it
+  temp <- stringr::str_split(temp, " ")[[1]]
+  # Get rid of trailing "" if necessary
+  indexes <- which(temp == "")
+  if(length(indexes) > 0){
+    temp <- temp[-indexes]
+  } 
+  #delete stop words
+  
+  return(temp)
+}
+
+
+# sentence <- parsed_address$path[3]
+# 
+# clean_sentence <- Clean_String(sentence)
+# 
+# c(clean_sentence)
+
+total_word_vec = c()
+
+ for (i in 1:length(parsed_address$path)){
+  total_word_vec = c(total_word_vec,unique(Clean_String(parsed_address$path[i])))
+}
+
+total_word_vec_unique = unique(total_word_vec)
+
+Word_Freq_matrix = data.frame(matrix(ncol = length(total_word_vec_unique), nrow = 0))
+
+colnames(Word_Freq_matrix) = c(total_word_vec_unique)
+
+
+
+
